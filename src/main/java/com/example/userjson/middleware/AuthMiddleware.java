@@ -1,0 +1,64 @@
+package com.example.userjson.middleware;
+
+import com.example.userjson.soap.SoapAuthClient;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+
+@Component
+public class AuthMiddleware extends OncePerRequestFilter {
+
+    private final SoapAuthClient soapAuthClient;
+
+    public AuthMiddleware(SoapAuthClient soapAuthClient) {
+        this.soapAuthClient = soapAuthClient;
+    }
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
+
+        // CORS headers
+        response.setHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
+        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
+
+        // Preflight хүсэлтийг шууд зөвшөөрнө
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            response.setStatus(HttpServletResponse.SC_OK);
+            return;
+        }
+
+        String path = request.getRequestURI();
+
+        if (path.startsWith("/users")) {
+            String authHeader = request.getHeader("Authorization");
+
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("text/plain;charset=UTF-8");
+                response.getWriter().write("Missing or invalid Authorization header");
+                return;
+            }
+
+            String token = authHeader.substring(7);
+
+            boolean valid = soapAuthClient.validateToken(token);
+
+            if (!valid) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("text/plain;charset=UTF-8");
+                response.getWriter().write("Invalid token");
+                return;
+            }
+        }
+
+        filterChain.doFilter(request, response);
+    }
+}
