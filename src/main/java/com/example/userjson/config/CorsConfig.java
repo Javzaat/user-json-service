@@ -17,7 +17,10 @@ public class CorsConfig {
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(List.of("http://127.0.0.1:5500"));
+        config.setAllowedOriginPatterns(List.of(
+                "http://127.0.0.1:5500",
+                "https://frontend-app-a4t6q.ondigitalocean.app"
+        ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(false);
