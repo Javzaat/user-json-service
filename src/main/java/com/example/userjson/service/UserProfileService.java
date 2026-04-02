@@ -1,47 +1,48 @@
 package com.example.userjson.service;
 
 import com.example.userjson.model.UserProfile;
+import com.example.userjson.repository.UserProfileRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class UserProfileService {
 
-    private final Map<Long, UserProfile> users = new HashMap<>();
-    private Long currentId = 1L;
+    private final UserProfileRepository userProfileRepository;
+
+    public UserProfileService(UserProfileRepository userProfileRepository) {
+        this.userProfileRepository = userProfileRepository;
+    }
 
     public UserProfile createUser(UserProfile user) {
-        user.setId(currentId++);
-        users.put(user.getId(), user);
-        return user;
+        return userProfileRepository.save(user);
     }
 
     public UserProfile getUser(Long id) {
-        return users.get(id);
+        return userProfileRepository.findById(id).orElse(null);
     }
 
     public Collection<UserProfile> getAllUsers() {
-        return users.values();
+        return userProfileRepository.findAll();
     }
 
     public UserProfile updateUser(Long id, UserProfile updatedUser) {
-        UserProfile existingUser = users.get(id);
+        UserProfile existingUser = userProfileRepository.findById(id).orElse(null);
 
         if (existingUser != null) {
             existingUser.setName(updatedUser.getName());
             existingUser.setEmail(updatedUser.getEmail());
             existingUser.setBio(updatedUser.getBio());
             existingUser.setPhone(updatedUser.getPhone());
-            existingUser.setImageUrl(updatedUser.getImageUrl()); // энэ мөр чухал
+            existingUser.setImageUrl(updatedUser.getImageUrl());
+            return userProfileRepository.save(existingUser);
         }
 
-        return existingUser;
+        return null;
     }
 
     public void deleteUser(Long id) {
-        users.remove(id);
+        userProfileRepository.deleteById(id);
     }
 }

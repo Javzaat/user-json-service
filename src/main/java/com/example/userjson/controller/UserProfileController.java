@@ -8,7 +8,6 @@ import java.util.Collection;
 
 @RestController
 @RequestMapping("/users")
-@CrossOrigin(origins = "http://127.0.0.1:5500")
 public class UserProfileController {
 
     private final UserProfileService userProfileService;
