@@ -4,7 +4,7 @@ import com.example.userjson.model.UserProfile;
 import com.example.userjson.service.UserProfileService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -38,7 +38,7 @@ public class UserProfileController {
     }
 
     @GetMapping
-    public Collection<UserProfile> getAllUsers() {
+    public List<UserProfile> getAllUsers() {
         return userProfileService.getAllUsers();
     }
 }

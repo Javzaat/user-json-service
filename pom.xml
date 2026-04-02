@@ -2,6 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -15,7 +16,7 @@
     <artifactId>user-json-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>user-json-service</name>
-    <description>Demo project for Spring Boot</description>
+    <description>User JSON Service</description>
 
     <properties>
         <java.version>21</java.version>
@@ -38,21 +39,22 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <scope>runtime</scope>
         </dependency>
 
-        <!-- SOAP client call хийхэд -->
+        <!-- SOAP client хийхэд -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webservices</artifactId>
         </dependency>
 
+        <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
 
+        <!-- Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -89,4 +91,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>

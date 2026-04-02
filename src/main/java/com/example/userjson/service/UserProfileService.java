@@ -4,7 +4,8 @@ import com.example.userjson.model.UserProfile;
 import com.example.userjson.repository.UserProfileRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserProfileService {
@@ -23,14 +24,15 @@ public class UserProfileService {
         return userProfileRepository.findById(id).orElse(null);
     }
 
-    public Collection<UserProfile> getAllUsers() {
+    public List<UserProfile> getAllUsers() {
         return userProfileRepository.findAll();
     }
 
     public UserProfile updateUser(Long id, UserProfile updatedUser) {
-        UserProfile existingUser = userProfileRepository.findById(id).orElse(null);
+        Optional<UserProfile> existingOpt = userProfileRepository.findById(id);
 
-        if (existingUser != null) {
+        if (existingOpt.isPresent()) {
+            UserProfile existingUser = existingOpt.get();
             existingUser.setName(updatedUser.getName());
             existingUser.setEmail(updatedUser.getEmail());
             existingUser.setBio(updatedUser.getBio());
