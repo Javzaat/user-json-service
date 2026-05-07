@@ -1,10 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Энэ pom.xml файл нь user-json-service Spring Boot project-ийн Maven тохиргоо юм.
+
+    User JSON Service-ийн үндсэн үүрэг:
+    - REST API endpoint-уудаар user profile CRUD хийх
+    - PostgreSQL database дээр user_profile table ашиглах
+    - SOAP service рүү ValidateToken request илгээж authentication шалгах
+
+    Энэ service нь Lab 06 дээр REST + SOAP integration-ийн JSON service хэсэг,
+    Lab 07 дээр cloud database холболт,
+    Lab 08 дээр API Gateway-ийн ард private service хэлбэрээр ажиллаж байна.
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
+    <!-- Maven project model version -->
     <modelVersion>4.0.0</modelVersion>
 
+    <!--
+        Spring Boot parent.
+        Dependency version-уудыг Spring Boot автоматаар удирдаж өгдөг.
+        Ингэснээр dependency бүр дээр version гараар бичих шаардлагагүй.
+    -->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -12,6 +31,7 @@
         <relativePath/>
     </parent>
 
+    <!-- Project-ийн үндсэн мэдээлэл -->
     <groupId>com.example</groupId>
     <artifactId>user-json-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
@@ -19,45 +39,79 @@
     <description>User JSON Service</description>
 
     <properties>
+        <!-- Project Java 21 дээр compile/build хийгдэнэ -->
         <java.version>21</java.version>
     </properties>
 
     <dependencies>
-        <!-- REST API -->
+
+        <!--
+            REST API dependency.
+
+            Spring MVC ашиглаж REST controller үүсгэхэд хэрэгтэй.
+            UserProfileController дээр @RestController, @GetMapping, @PostMapping гэх мэт
+            annotation-уудыг ашиглах боломжийг энэ starter өгнө.
+        -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- JPA -->
+        <!--
+            JPA dependency.
+
+            PostgreSQL database-тэй entity/repository хэлбэрээр ажиллахад хэрэгтэй.
+            UserProfile entity болон UserProfileRepository энэ dependency дээр тулгуурлаж ажиллана.
+        -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
-        <!-- PostgreSQL -->
+        <!--
+            PostgreSQL JDBC driver.
+
+            Spring Boot application PostgreSQL database руу холбогдоход энэ driver хэрэгтэй.
+            runtime scope нь application ажиллах үед driver хэрэгтэй гэсэн утгатай.
+        -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
-
         </dependency>
-        
 
-        <!-- SOAP client хийхэд -->
+        <!--
+            SOAP client хийх dependency.
+
+            JSON service нь SOAP server биш боловч SOAP Authentication Service рүү
+            ValidateToken request илгээдэг client үүрэгтэй.
+
+            SoapAuthClient class дээр XML SOAP request үүсгээд RestTemplate ашиглаж
+            SOAP service рүү POST хийдэг.
+        -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webservices</artifactId>
         </dependency>
 
-        <!-- Lombok -->
+        <!--
+            Lombok dependency.
+
+            UserProfile entity дээр @Data annotation ашиглаж getter, setter, toString зэрэг
+            boilerplate method-уудыг автоматаар үүсгэж байна.
+        -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
 
-        <!-- Test -->
+        <!--
+            Test dependency.
+
+            Unit болон integration test бичих үед ашиглагдана.
+            scope=test тул зөвхөн test үед хэрэглэгдэнэ.
+        -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -67,9 +121,17 @@
 
     <build>
         <plugins>
+
+            <!--
+                Maven Compiler Plugin.
+
+                Lombok annotation processor-ийг compile үед ажиллуулахад ашиглаж байна.
+                @Data зэрэг Lombok annotation-уудыг Java code болгон боловсруулахад хэрэгтэй.
+            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+
                 <configuration>
                     <annotationProcessorPaths>
                         <path>
@@ -80,11 +142,21 @@
                 </configuration>
             </plugin>
 
+            <!--
+                Spring Boot Maven Plugin.
+
+                Project-ийг executable jar болгон package хийхэд ашиглана.
+                Droplet дээр systemd service энэ jar файлыг java -jar командаар ажиллуулдаг.
+            -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+
                 <configuration>
                     <excludes>
+                        <!--
+                            Lombok нь compile-time tool тул final jar дотор оруулах шаардлагагүй.
+                        -->
                         <exclude>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
